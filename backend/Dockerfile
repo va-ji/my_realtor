@@ -1,5 +1,5 @@
 # Multi-stage build for API server
-FROM rust:1.83 as builder
+FROM rust:latest as builder
 
 WORKDIR /app
 
