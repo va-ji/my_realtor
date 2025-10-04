@@ -38,7 +38,8 @@ pids
 *.pid.lock
 
 # Rust
-Cargo.lock
+# Cargo.lock should be committed for applications (only ignore for libraries)
+# Cargo.lock
 
 # Database data
 database/data/
