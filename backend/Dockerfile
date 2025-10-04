@@ -9,8 +9,8 @@ COPY Cargo.toml Cargo.lock ./
 # Copy source code
 COPY src ./src
 
-# Set DATABASE_URL for SQLx compile-time checks (dummy URL for compilation)
-ENV DATABASE_URL=postgresql://user:pass@localhost/dummy
+# Skip SQLx compile-time verification (use offline mode)
+ENV SQLX_OFFLINE=true
 
 # Build the API server binary in release mode
 RUN cargo build --release --bin api-server
