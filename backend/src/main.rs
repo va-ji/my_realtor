@@ -4,7 +4,7 @@ use axum::{
     Json, Router,
     extract::State,
 };
-use realtor_api::calculate_rental_yield;
+use real_estate_backend::calculate_rental_yield;
 use serde::{Deserialize, Serialize};
 use sqlx::postgres::PgPoolOptions;
 use sqlx::PgPool;
