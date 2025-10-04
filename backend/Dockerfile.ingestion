@@ -1,5 +1,5 @@
 # Multi-stage build for data ingestion worker
-FROM rust:1.75 as builder
+FROM rust:1.83 as builder
 
 WORKDIR /app
 
