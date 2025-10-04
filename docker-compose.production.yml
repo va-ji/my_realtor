@@ -1,0 +1,101 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgis/postgis:15-3.3
+    container_name: real_estate-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: realtor_user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-realtor_pass}
+      POSTGRES_DB: realtor_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d:ro
+    networks:
+      - realtor_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U realtor_user -d realtor_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api-server:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: real_estate-api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://realtor_user:${POSTGRES_PASSWORD:-realtor_pass}@postgres:5432/realtor_db
+      RUST_LOG: ${RUST_LOG:-info}
+      API_PORT: 3001
+    ports:
+      - "3001:3001"
+    networks:
+      - realtor_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  ingestion-worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.ingestion
+    container_name: real_estate-ingestion
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://realtor_user:${POSTGRES_PASSWORD:-realtor_pass}@postgres:5432/realtor_db
+      NSW_SALES_URL: https://nswpropertysalesdata.com/data/archive.zip
+      NSW_RENTALS_URL: https://www.nsw.gov.au/sites/default/files/2024-12/rental-bond-data-december-2024.xlsx
+      TEMP_DIR: /tmp/real_estate_ingestion
+      RUST_LOG: ${RUST_LOG:-info}
+      LIMIT_RECORDS: ${LIMIT_RECORDS:-0}
+    volumes:
+      - ingestion_logs:/var/log/ingestion
+      - ingestion_temp:/tmp/real_estate_ingestion
+    networks:
+      - realtor_network
+
+  # Optional: Nginx reverse proxy for production
+  # Uncomment if you want to serve API + Frontend through nginx
+  # nginx:
+  #   image: nginx:alpine
+  #   container_name: real_estate-nginx
+  #   restart: unless-stopped
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+  #     - ./nginx/ssl:/etc/nginx/ssl:ro
+  #   depends_on:
+  #     - api-server
+  #   networks:
+  #     - realtor_network
+
+networks:
+  realtor_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${DB_DATA_PATH:-./database/data}  # Override in .env.production to use HDD path
+  ingestion_logs:
+    driver: local
+  ingestion_temp:
+    driver: local

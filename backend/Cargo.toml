@@ -1,0 +1,52 @@
+[package]
+name = "real-estate-backend"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# Web framework
+axum = "0.7"
+tokio = { version = "1.0", features = ["full"] }
+tower = "0.4"
+tower-http = { version = "0.5", features = ["cors"] }
+
+# Database
+sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "postgres", "uuid", "chrono", "rust_decimal"] }
+uuid = { version = "1.0", features = ["serde", "v4"] }
+rust_decimal = { version = "1.33", features = ["serde"] }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Date/Time
+chrono = { version = "0.4", features = ["serde"] }
+
+# Error handling
+anyhow = "1.0"
+thiserror = "1.0"
+
+# Environment
+dotenvy = "0.15"
+
+# HTTP client for data fetching
+reqwest = { version = "0.11", features = ["json", "stream"] }
+
+# Geospatial data
+geojson = "0.24"
+
+# Data ingestion
+csv = "1.3"                          # CSV parsing for NSW sales data
+calamine = "0.24"                    # XLSX parsing for rental bond data
+zip = "0.6"                          # ZIP extraction for NSW data
+bytes = "1.5"                        # Binary data handling
+tracing = "0.1"                      # Structured logging
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
+
+[[bin]]
+name = "api-server"
+path = "src/main.rs"
+
+[[bin]]
+name = "data-ingestion"
+path = "src/bin/data_ingestion/main.rs"

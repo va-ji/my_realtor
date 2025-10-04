@@ -1,0 +1,28 @@
+# Local development docker-compose
+# For production deployment, use docker-compose.production.yml
+version: '3.8'
+
+services:
+  postgres:
+    image: postgis/postgis:15-3.3
+    container_name: real_estate-postgres-dev
+    environment:
+      POSTGRES_DB: realtor_db
+      POSTGRES_USER: realtor_user
+      POSTGRES_PASSWORD: realtor_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./database/data:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d
+    networks:
+      - realtor_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U realtor_user -d realtor_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  realtor_network:
+    driver: bridge

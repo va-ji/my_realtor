@@ -1,0 +1,11 @@
+# Real Estate Data Ingestion Cron Schedule
+# Format: minute hour day month weekday command
+
+# Run NSW sales ingestion daily at 6am AEST (after NSW updates at 5am)
+0 6 * * * /usr/local/bin/data-ingestion nsw_sales >> /var/log/ingestion/nsw_sales.log 2>&1
+
+# Run NSW rentals ingestion monthly on the 5th at 7am AEST (after monthly data published)
+0 7 5 * * /usr/local/bin/data-ingestion nsw_rentals >> /var/log/ingestion/nsw_rentals.log 2>&1
+
+# Health check: Log status every hour
+0 * * * * echo "$(date): Ingestion worker healthy" >> /var/log/ingestion/health.log 2>&1

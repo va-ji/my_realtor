@@ -1,0 +1,45 @@
+# Multi-stage build for data ingestion worker
+FROM rust:1.75 as builder
+
+WORKDIR /app
+
+# Copy dependency manifests
+COPY Cargo.toml Cargo.lock ./
+
+# Copy source code
+COPY src ./src
+
+# Build the data-ingestion binary in release mode
+RUN cargo build --release --bin data-ingestion
+
+# Runtime stage - use debian slim for smaller image
+FROM debian:bookworm-slim
+
+# Install required runtime dependencies
+RUN apt-get update && \
+    apt-get install -y \
+    ca-certificates \
+    curl \
+    libssl3 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install supercronic for cron scheduling
+RUN curl -fsSLO https://github.com/aptible/supercronic/releases/download/v0.2.29/supercronic-linux-amd64 && \
+    chmod +x supercronic-linux-amd64 && \
+    mv supercronic-linux-amd64 /usr/local/bin/supercronic
+
+# Copy the compiled binary from builder
+COPY --from=builder /app/target/release/data-ingestion /usr/local/bin/data-ingestion
+
+# Create directories for logs and temp files
+RUN mkdir -p /var/log/ingestion /tmp/real_estate_ingestion
+
+# Copy crontab file
+COPY crontab /etc/crontab
+
+# Set environment variables (can be overridden in docker-compose)
+ENV RUST_LOG=info
+ENV TEMP_DIR=/tmp/real_estate_ingestion
+
+# Use supercronic to run scheduled tasks
+CMD ["supercronic", "/etc/crontab"]

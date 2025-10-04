@@ -1,0 +1,44 @@
+# Dependencies
+node_modules/
+target/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Build outputs
+dist/
+build/
+.svelte-kit/
+
+# Database
+*.db
+*.sqlite
+
+# IDE files (optimized for Neovim users)
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Rust
+Cargo.lock
+
+# Database data
+database/data/
