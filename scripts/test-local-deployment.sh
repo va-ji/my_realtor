@@ -21,15 +21,15 @@ if [ ! -f ".env.production" ]; then
 fi
 
 echo "🧹 Cleaning up any existing local test deployment..."
-docker-compose -f docker-compose.production.yml down -v 2>/dev/null || true
+docker compose -f docker-compose.production.yml down -v 2>/dev/null || true
 
 echo ""
 echo "🏗️  Building images locally..."
-docker-compose -f docker-compose.production.yml build
+docker compose -f docker-compose.production.yml build
 
 echo ""
 echo "🚀 Starting services..."
-docker-compose -f docker-compose.production.yml up -d
+docker compose -f docker-compose.production.yml up -d
 
 echo ""
 echo "⏳ Waiting for services to be healthy..."
@@ -109,13 +109,13 @@ echo "✅ All Tests Passed!"
 echo "=================================================="
 echo ""
 echo "Services running:"
-docker-compose -f docker-compose.production.yml ps
+docker compose -f docker-compose.production.yml ps
 echo ""
 echo "View logs:"
-echo "  docker-compose -f docker-compose.production.yml logs -f"
+echo "  docker compose -f docker-compose.production.yml logs -f"
 echo ""
 echo "Stop and cleanup:"
-echo "  docker-compose -f docker-compose.production.yml down -v"
+echo "  docker compose -f docker-compose.production.yml down -v"
 echo ""
 echo "Deploy to production:"
 echo "  scp -r backend database docker-compose.production.yml .env.production scripts user@server:/opt/real_estate/"

@@ -39,11 +39,11 @@ fi
 
 echo ""
 echo "🔨 Step 3: Building Docker images..."
-docker-compose -f docker-compose.production.yml build
+docker compose -f docker-compose.production.yml build
 
 echo ""
 echo "🚀 Step 4: Starting services..."
-docker-compose -f docker-compose.production.yml up -d
+docker compose -f docker-compose.production.yml up -d
 
 echo ""
 echo "⏳ Waiting for services to be healthy..."
@@ -75,7 +75,7 @@ fi
 
 echo ""
 echo "📊 Step 6: Checking service status..."
-docker-compose -f docker-compose.production.yml ps
+docker compose -f docker-compose.production.yml ps
 
 echo ""
 echo "=================================================="
@@ -87,9 +87,9 @@ echo "  API Server: http://localhost:3001/api/health"
 echo "  Database: postgresql://realtor_user:***@localhost:5432/realtor_db"
 echo ""
 echo "View logs:"
-echo "  All services:     docker-compose -f docker-compose.production.yml logs -f"
-echo "  API server:       docker-compose -f docker-compose.production.yml logs -f api-server"
-echo "  Ingestion worker: docker-compose -f docker-compose.production.yml logs -f ingestion-worker"
+echo "  All services:     docker compose -f docker-compose.production.yml logs -f"
+echo "  API server:       docker compose -f docker-compose.production.yml logs -f api-server"
+echo "  Ingestion worker: docker compose -f docker-compose.production.yml logs -f ingestion-worker"
 echo "  Ingestion logs:   docker exec real_estate-ingestion cat /var/log/ingestion/nsw_sales.log"
 echo ""
 echo "Manual ingestion test:"

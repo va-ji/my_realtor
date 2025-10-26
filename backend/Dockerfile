@@ -9,6 +9,9 @@ COPY Cargo.toml Cargo.lock ./
 # Copy source code
 COPY src ./src
 
+# Copy SQLx offline metadata for compile-time verification
+COPY .sqlx ./.sqlx
+
 # Skip SQLx compile-time verification (use offline mode)
 ENV SQLX_OFFLINE=true
 
